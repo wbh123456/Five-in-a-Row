@@ -20,7 +20,7 @@ void drawgraph() {
 			else {
 				if (chess.first) player_give_a_move(chess);
 					
-				else ai_give_a_move(chess);
+				else ai_give_a_move_advance(chess);
 			}
 
 			chess.first = !chess.first; // alternate player

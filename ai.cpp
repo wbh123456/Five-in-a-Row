@@ -73,21 +73,24 @@ void ai_give_a_move(Chess &chess) {
 	}
 	//DEBUGGING:
 	
-	int x_ = 6, y_ = 6;
+	int x_ = x, y_ = y;
 		setorigin(0, 0);
 
 		setfillcolor(BLACK);
 		solidrectangle(10, 80, 250, 550);
 		//display the deatails at largest gaining point
-		int before = chess.gaining_vector[x_][y_][0], after = chess.gaining_vector[x_][y_][1];
 
 		std::string s = "debugging : i = " + std::to_string(x_) + " , j = " + std::to_string(y_);
 		outtextxy(50, 80, s.c_str());
+
+		int before = chess.gaining_vector[x_][y_][0] + chess.gaining_vector[x_][y_][1] + chess.gaining_vector[x_][y_][2] + chess.gaining_vector[x_][y_][3];
+		int after = chess.gaining_vector[x_][y_][4] + chess.gaining_vector[x_][y_][5] + chess.gaining_vector[x_][y_][6] + chess.gaining_vector[x_][y_][7];
+		
 		s = "points gained = " + std::to_string(after - before);
 		outtextxy(50, 100, s.c_str());
-		s = "before: " + std::to_string(chess.gaining_vector[x_][y_][0]);
+		s = "before: " + std::to_string(chess.gaining_vector[x_][y_][0]) + ", " + std::to_string(chess.gaining_vector[x_][y_][1]) + ", " + std::to_string(chess.gaining_vector[x_][y_][2]) + ", " + std::to_string(chess.gaining_vector[x_][y_][3]);
 		outtextxy(50, 120, s.c_str());
-		s = "after: " +std::to_string(chess.gaining_vector[x_][y_][1]);
+		s = "after: " + std::to_string(chess.gaining_vector[x_][y_][4]) + ", " + std::to_string(chess.gaining_vector[x_][y_][5]) + ", " + std::to_string(chess.gaining_vector[x_][y_][6]) + ", " + std::to_string(chess.gaining_vector[x_][y_][7]);
 		outtextxy(50, 140, s.c_str());
 	
 
@@ -147,58 +150,75 @@ void ai_give_a_move_advance(Chess &chess) {
 
 
 	//find the best move( with very high score)
+	int gain = 0;
 	for (int i = 0; i != 15; i++) {
 		for (int j = 0; j != 15; j++) {
 
 			if (chess.moves[i][j] == 0 && check[i][j] == true) {
 
-				int first_opponent_best_gain = 0,  second_move_gain = 0, second_opponent_gain = 0;
+				int first_opponent_best_gain = 0, second_move_gain = 0, second_opponent_gain = 0, third_move_gain = 0;
 
 				int first_move_gain = chess.winning_point_gain(i, j);
 
-				//score the chess after this move
-				std::vector<int> best_move, best_move2, best_move3;
-				Chess chess_2 = chess;
-				chess_2.moves[i][j] = chess_2.first ? 1 : 2;
-				chess_2.first = !chess_2.first;
-				chess_2.check_if_win();
-				 first_opponent_best_gain = best_move_gain(chess_2, best_move);
-				if (chess_2.win) {
-					first_opponent_best_gain = -100000000;
-				}
-				else {
+				////score the chess after this move
+				//Chess chess_2, chess_3, chess_4, chess_5;
+				//std::vector<int> best_move = { 0,0 }, best_move2 = { 0,0 }, best_move3 = { 0,0 }, best_move4 = { 0,0 };
 
-					Chess chess_3 = chess_2;
-					chess_3.moves[best_move[0]][best_move[1]] = chess_3.first ? 1 : 2;
-					chess_3.first = !chess_3.first;
-					chess_3.check_if_win();
+				//chess_2 = chess;
+				//chess_2.moves[i][j] = chess_2.first ? 1 : 2;
+				//chess_2.first = !chess_2.first;
+				//chess_2.check_if_win();
+				//if (chess_2.win) {
+				//	first_move_gain = 100000000;
+				//	goto lable;
+				//}
+				//first_opponent_best_gain = best_move_gain(chess_2, best_move);
+				//if (first_opponent_best_gain < 20000) first_opponent_best_gain = 0;
 
-					second_move_gain = best_move_gain(chess_3, best_move2);
-					if (chess_3.win) {
+
+				//chess_3 = chess_2;
+				//chess_3.moves[best_move[0]][best_move[1]] = chess_3.first ? 1 : 2;
+				//chess_3.first = !chess_3.first;
+				//chess_3.check_if_win();
+				//if (chess_3.win) {
+				//	first_opponent_best_gain = 100000000;
+				//	goto lable;
+				//}
+				//second_move_gain = best_move_gain(chess_3, best_move2);
+				//if (second_move_gain < 20000) second_move_gain = 0;
+
+					/* chess_4 = chess_3;
+					chess_4.moves[best_move2[0]][best_move2[1]] = chess_4.first ? 1 : 2;
+					chess_4.first = !chess_4.first;
+					chess_4.check_if_win();
+					if (chess_4.win) {
 						second_move_gain = 100000000;
+						goto lable;
 					}
-					else {
-						Chess chess_4 = chess_3;
-						chess_4.moves[best_move2[0]][best_move2[1]] = chess_4.first ? 1 : 2;
-						chess_4.first = !chess_4.first;
-						chess_4.check_if_win();
+					second_opponent_gain = best_move_gain(chess_4, best_move3);
 
-						second_opponent_gain = best_move_gain(chess_4, best_move3);
-						if (chess_4.win) {
-							second_opponent_gain = -100000000;
-
+						 chess_5 = chess_4;
+						chess_5.moves[best_move3[0]][best_move3[1]] = chess_5.first ? 1 : 2;
+						chess_5.first = !chess_5.first;
+						chess_5.check_if_win();
+						if (chess_5.win) {
+							second_opponent_gain = 100000000;
+							goto lable;
 						}
-					}
-				}
+						third_move_gain = best_move_gain(chess_5, best_move4);*/
 
-				
-
+			lable:
 
 
-				int gain = first_move_gain - first_opponent_best_gain;
-					gain = gain + second_move_gain - second_opponent_gain;
 
-					information[i][j] = { first_move_gain ,best_move[0], best_move[1],first_opponent_best_gain,best_move2[0],best_move2[1], second_move_gain,best_move3[0],best_move3[1], second_opponent_gain };
+				gain = first_move_gain - first_opponent_best_gain;
+				/*gain = gain + second_move_gain - second_opponent_gain;
+				gain = gain + third_move_gain;*/
+
+				//information[i][j] = { first_move_gain ,best_move[0], best_move[1],
+				//	first_opponent_best_gain,best_move2[0],best_move2[1], second_move_gain,
+				//	best_move3[0],best_move3[1], second_opponent_gain,
+				//	best_move4[0], best_move4[1], third_move_gain };
 
 
 
@@ -232,40 +252,46 @@ void ai_give_a_move_advance(Chess &chess) {
 	}
 
 
-	//DEBUGGING:
-	setorigin(0, 0);
+	////DEBUGGING:
 
-	int x_ = 6, y_ =7;
+	//setorigin(0, 0);
 
-	setfillcolor(BLACK);
-	solidrectangle(10, 80, 250, 550);
-	//display the deatails at largest gaining point
-	int before = chess.gaining_vector[x_][y_][0], after = chess.gaining_vector[x_][y_][1];
+	//int x_ = x, y_ = y;
 
-	std::string s = "debugging : i = " + std::to_string(x_) + " , j = " + std::to_string(y_);
-	outtextxy(50, 80, s.c_str());
-	s = "points gained = " + std::to_string(after - before);
-	outtextxy(50, 100, s.c_str());
-	s = "before: " + std::to_string(chess.gaining_vector[x_][y_][0]);
-	outtextxy(50, 120, s.c_str());
-	s = "after: " + std::to_string(chess.gaining_vector[x_][y_][1]);
-	outtextxy(50, 140, s.c_str());
+	//setfillcolor(BLACK);
+	//solidrectangle(10, 80, 250, 550);
+	////display the deatails at largest gaining point
+	//int before = chess.gaining_vector[x_][y_][0] + chess.gaining_vector[x_][y_][1] + chess.gaining_vector[x_][y_][2] + chess.gaining_vector[x_][y_][3];
+	//int  after = chess.gaining_vector[x_][y_][4] + chess.gaining_vector[x_][y_][5] + chess.gaining_vector[x_][y_][6] + chess.gaining_vector[x_][y_][7];
 
-	s = "opponent gain: " + std::to_string(information[x_][y_][3]);
-	outtextxy(50, 160, s.c_str());
-	s = "  opponent best move: " + std::to_string(information[x_][y_][1]) + " , " + std::to_string(information[x_][y_][2]);
-	outtextxy(50, 180, s.c_str());
+	//std::string s = "debugging : i = " + std::to_string(x_) + " , j = " + std::to_string(y_);
+	//outtextxy(50, 80, s.c_str());
+	//s = "Total points gained = ";
+	//outtextxy(50, 100, s.c_str());
 
-	s = "second move gain: " + std::to_string(information[x_][y_][6]);
-	outtextxy(50, 220, s.c_str());
-	s = "  second best move: " + std::to_string(information[x_][y_][4]) + " , " + std::to_string(information[x_][y_][5]);
-	outtextxy(50, 240, s.c_str());
+	//s = "first move gain = " + std::to_string(information[x_][y_][0]);
+	//outtextxy(50, 140, s.c_str());
 
-	s = "second opponent gain: " + std::to_string(information[x_][y_][9]);
-	outtextxy(50, 280, s.c_str());
-	s = "  second opponent move: " + std::to_string(information[x_][y_][7]) + " , " + std::to_string(information[x_][y_][8]);
-	outtextxy(50, 300, s.c_str());
-	
+	//s = "opponent gain: " + std::to_string(information[x_][y_][3]);
+	//outtextxy(50, 160, s.c_str());
+	//s = "  opponent best move: " + std::to_string(information[x_][y_][1]) + " , " + std::to_string(information[x_][y_][2]);
+	//outtextxy(50, 180, s.c_str());
+
+	//s = "second move gain: " + std::to_string(information[x_][y_][6]);
+	//outtextxy(50, 220, s.c_str());
+	//s = "  second best move: " + std::to_string(information[x_][y_][4]) + " , " + std::to_string(information[x_][y_][5]);
+	//outtextxy(50, 240, s.c_str());
+
+	//s = "second opponent gain: " + std::to_string(information[x_][y_][9]);
+	//outtextxy(50, 280, s.c_str());
+	//s = "  second opponent move: " + std::to_string(information[x_][y_][7]) + " , " + std::to_string(information[x_][y_][8]);
+	//outtextxy(50, 300, s.c_str());
+
+	//s = "third move gain: " + std::to_string(information[x_][y_][12]);
+	//outtextxy(50, 340, s.c_str());
+	//s = "  third move: " + std::to_string(information[x_][y_][10]) + " , " + std::to_string(information[x_][y_][11]);
+	//outtextxy(50, 360, s.c_str());
+
 
 
 	//update chess
@@ -320,11 +346,23 @@ int best_move_gain(Chess &chess, std::vector<int>& best_move) {
 				if (gain > largest_gain) {
 					largest_gain = gain;
 					x = i; y = j;
+					candidates.clear();
+					candidates.push_back({ i,j });
+				}
+				else if (float(largest_gain - gain) <= gain*0.05) {
+					candidates.push_back({ i,j });
 				}
 			}
 
 		}
 	}
+
+	//srand(unsigned(time(NULL)));
+	//random_shuffle(candidates.begin(), candidates.end());
+
+	//x = candidates[0][0];
+	//y = candidates[0][1];
+
 	best_move = { x, y };
 
 
